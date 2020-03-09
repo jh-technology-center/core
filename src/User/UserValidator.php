@@ -52,7 +52,8 @@ class UserValidator extends AbstractValidator
             'email' => [
                 'required',
                 'email',
-                'unique:users,email'.$idSuffix
+                'unique:users,email'.$idSuffix,
+                'regex:/^[A-Za-z0-9_\-\.]+@ijheng\.com$/i',
             ],
             'password' => [
                 'required',
@@ -67,7 +68,8 @@ class UserValidator extends AbstractValidator
     protected function getMessages()
     {
         return [
-            'username.regex' => $this->translator->trans('core.api.invalid_username_message')
+            'username.regex' => $this->translator->trans('core.api.invalid_username_message'),
+            'email.regex' => '邮箱地址必须是 @ijheng.com 结尾',
         ];
     }
 }
