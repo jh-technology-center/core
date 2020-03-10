@@ -69,7 +69,8 @@ class UserValidator extends AbstractValidator
     {
         return [
             'username.regex' => $this->translator->trans('core.api.invalid_username_message'),
-            'email.regex' => '邮箱地址必须是 @ijheng.com 结尾',
+            'email.regex' => '邮箱地址必须是以 @ijheng.com 结尾的企业邮箱',
+
         ];
     }
 }
