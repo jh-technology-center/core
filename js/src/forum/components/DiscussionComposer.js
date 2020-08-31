@@ -16,12 +16,14 @@ export default class DiscussionComposer extends ComposerBody {
   init() {
     super.init();
 
+    this.composer.fields.title = this.composer.fields.title || m.prop('');
+
     /**
      * The value of the title input.
      *
      * @type {Function}
      */
-    this.title = m.prop('');
+    this.title = this.composer.fields.title;
   }
 
   static initProps(props) {
@@ -39,16 +41,19 @@ export default class DiscussionComposer extends ComposerBody {
 
     items.add('title', <h3>{app.translator.trans('core.forum.composer_discussion.title')}</h3>, 100);
 
-    items.add('discussionTitle', (
+    items.add(
+      'discussionTitle',
       <h3>
-        <input className="FormControl"
+        <input
+          className="FormControl"
           value={this.title()}
           oninput={m.withAttr('value', this.title)}
           placeholder={this.props.titlePlaceholder}
           disabled={!!this.props.disabled}
-          onkeydown={this.onkeydown.bind(this)}/>
+          onkeydown={this.onkeydown.bind(this)}
+        />
       </h3>
-    ));
+    );
 
     return items;
   }
@@ -60,16 +65,17 @@ export default class DiscussionComposer extends ComposerBody {
    * @param {Event} e
    */
   onkeydown(e) {
-    if (e.which === 13) { // Return
+    if (e.which === 13) {
+      // Return
       e.preventDefault();
-      this.editor.setSelectionRange(0, 0);
+      this.composer.editor.moveCursorTo(0);
     }
 
     m.redraw.strategy('none');
   }
 
-  preventExit() {
-    return (this.title() || this.content()) && this.props.confirmExit;
+  hasChanges() {
+    return this.title() || this.composer.fields.content();
   }
 
   /**
@@ -80,7 +86,7 @@ export default class DiscussionComposer extends ComposerBody {
   data() {
     return {
       title: this.title(),
-      content: this.content()
+      content: this.composer.fields.content(),
     };
   }
 
@@ -89,13 +95,13 @@ export default class DiscussionComposer extends ComposerBody {
 
     const data = this.data();
 
-    app.store.createRecord('discussions').save(data).then(
-      discussion => {
-        app.composer.hide();
-        app.cache.discussionList.addDiscussion(discussion);
+    app.store
+      .createRecord('discussions')
+      .save(data)
+      .then((discussion) => {
+        this.composer.hide();
+        app.discussions.refresh();
         m.route(app.route.discussion(discussion));
-      },
-      this.loaded.bind(this)
-    );
+      }, this.loaded.bind(this));
   }
 }
