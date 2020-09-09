@@ -44,7 +44,9 @@ class UserValidator extends AbstractValidator
         return [
             'username' => [
                 'required',
-                'regex:/^[a-z0-9_-]+$/i',
+                // 'regex:/^[a-z0-9_-]+$/i',
+                // 1. CJK基础上，不允许全数字用户名出现，防止个人主页报错。
+                'regex:/^[-_a-zA-Z0-9\x7f-\xff]*[-_a-zA-Z\x7f-\xff][-_a-zA-Z0-9\x7f-\xff]*$/i',
                 'unique:users,username'.$idSuffix,
                 'min:3',
                 'max:30'
